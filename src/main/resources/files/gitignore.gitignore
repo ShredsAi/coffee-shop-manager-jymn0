@@ -1,0 +1,25 @@
+# Logs
+logs
+*.log
+
+# Target folder
+/target
+
+# IntelliJ
+.idea
+*.iml
+
+# Eclipse
+.project
+.classpath
+.settings/
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Environment files
+.env
+
+# Others
+*.swp
