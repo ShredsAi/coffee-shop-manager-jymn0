@@ -1,0 +1,15 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://db-prod:5432/inventorydb
+  jpa:
+    properties:
+      hibernate:
+        generate_statistics: true
+logging:
+  level:
+    root: INFO
+server:
+  port: 8081
+connection:
+  pool:
+    size: 20

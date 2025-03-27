@@ -1,0 +1,131 @@
+spring:
+  application:
+    name: inventory-service
+  # RabbitMQ Configuration
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+    listener:
+      simple:
+        retry:
+          enabled: true
+          initial-interval: 1000
+          max-attempts: 3
+          max-interval: 10000
+          multiplier: 2.0
+    publisher-confirm-type: correlated
+    publisher-returns: true
+  datasource:
+    url: jdbc:postgresql://localhost:5432/inventorydb
+    username: postgres
+    password: postgres
+    hikari:
+      maximum-pool-size: ${connection.pool.size:10}
+      minimum-idle: 5
+      idle-timeout: 300000
+      connection-timeout: 20000
+      max-lifetime: 1200000
+  jpa:
+    open-in-view: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+        generate_statistics: false
+    hibernate:
+      ddl-auto: validate
+      use-new-id-generator-mappings: false
+    show-sql: false
+
+# Inventory Queue Configuration
+inventory:
+  queue:
+    orders: inventory.orders
+    orders.dlq: inventory.orders.dlq
+  exchange:
+    orders: inventory.exchange
+    orders.dlq: inventory.exchange.dlq
+
+server:
+  port: 8080
+  tomcat:
+    threads:
+      max: 200
+    max-connections: 8192
+    accept-count: 100
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: when_authorized
+      probes:
+        enabled: true
+  health:
+    livenessstate:
+      enabled: true
+    readinessstate:
+      enabled: true
+
+logging:
+  level:
+    root: INFO
+    ai.shreds: INFO
+    org.hibernate.SQL: INFO
+    org.hibernate.type.descriptor.sql.BasicBinder: INFO
+  pattern:
+    console: '%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n'
+
+connection:
+  pool:
+    size: 10
+
+transaction:
+  timeout: 30
+
+---
+spring:
+  config:
+    activate:
+      on-profile: dev
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+  datasource:
+    url: jdbc:postgresql://localhost:5432/inventorydb_dev
+
+logging:
+  level:
+    ai.shreds: DEBUG
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+
+---
+spring:
+  config:
+    activate:
+      on-profile: prod
+  jpa:
+    show-sql: false
+    hibernate:
+      ddl-auto: validate
+  datasource:
+    url: jdbc:postgresql://prod-db:5432/inventorydb_prod
+
+server:
+  port: 8080
+
+connection:
+  pool:
+    size: 50
+
+logging:
+  level:
+    root: WARN
+    ai.shreds: INFO

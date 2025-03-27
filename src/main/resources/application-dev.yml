@@ -1,0 +1,9 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/inventorydb_dev
+  jpa:
+    show-sql: true
+logging:
+  level:
+    root: DEBUG
+debug: true
